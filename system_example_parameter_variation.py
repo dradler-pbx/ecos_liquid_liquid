@@ -1,9 +1,8 @@
 import VCSpbx as vcs
 from CoolProp.CoolProp import PropsSI as CPPSI
 import numpy as np
-from tqdm import tqdm
 from pandas import DataFrame, to_pickle
-import matplotlib.pyplot as plt
+
 
 # parameter setting
 cpr_speed = 4000.0  # rpm
@@ -73,6 +72,7 @@ for i in range(len(T_hotside_range)):
                 run_return = system.run()
             except:
                 raise ValueError('Transition failed! T_hotside {} -> {} at {}'.format(T_hotside_range[i-1], T_hotside_range[i], val))
+
     for j in range(len(T_coldside_range)):
         if j > 0:
             transition_values = np.linspace(T_coldside_range[j-1], T_coldside_range[j], 20)
@@ -88,8 +88,8 @@ for i in range(len(T_hotside_range)):
         for cpr_speed in cpr_speed_range:
             cpr.set_speed(cpr_speed)
             res_dict = dict()
-            res_dict['T_hotside_in'] = T_hotside_in
-            res_dict['T_coldside_in'] = T_coldside_in
+            res_dict['T_hotside_in'] = T_hotside_range[i]
+            res_dict['T_coldside_in'] = T_coldside_range[j]
             res_dict['cpr_speed'] = cpr_speed
 
             try:
@@ -109,6 +109,8 @@ for i in range(len(T_hotside_range)):
             result_list.append(res_dict)
             print("{} of {}".format(count, runs))
             count += 1
+            if count>50:
+                raise ValueError
         cpr_speed_range = np.flip(cpr_speed_range)
     T_coldside_range = np.flip(T_coldside_range)
 data = DataFrame(result_list)

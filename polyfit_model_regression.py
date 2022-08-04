@@ -30,7 +30,7 @@ def write_results_file(regs, xdata):
             f.write('---\n')
 
 
-data_raw = pd.read_pickle('data_cleared.pkl')
+data_raw = pd.read_pickle('data.pkl')
 
 x_data = data_raw[['T_hotside_in', 'T_coldside_in', 'cpr_speed']]
 Q0_data = data_raw['Q0']

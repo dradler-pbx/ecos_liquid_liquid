@@ -109,8 +109,6 @@ for i in range(len(T_hotside_range)):
             result_list.append(res_dict)
             print("{} of {}".format(count, runs))
             count += 1
-            if count>50:
-                raise ValueError
         cpr_speed_range = np.flip(cpr_speed_range)
     T_coldside_range = np.flip(T_coldside_range)
 data = DataFrame(result_list)

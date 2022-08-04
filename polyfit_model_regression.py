@@ -26,7 +26,7 @@ def write_results_file(regs, variables: list):
             f.write('---\n')
 
 
-data_raw = pd.read_pickle('data.pkl')
+data_raw = pd.read_pickle('data_cleared.pkl')
 
 # generate training data.csv
 x_data = data_raw[['T_hotside_in', 'T_coldside_in', 'cpr_speed']]

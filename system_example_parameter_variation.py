@@ -1,6 +1,6 @@
 import VCSpbx as vcs
 from CoolProp.CoolProp import PropsSI as CPPSI
-from numpy import arange
+import numpy as np
 from tqdm import tqdm
 from pandas import DataFrame, to_pickle
 import matplotlib.pyplot as plt
@@ -55,9 +55,9 @@ ihx_cpr = vcs.Junction(id='ihx_cpr', system=system, medium=ref, upstream_compone
 srccold_evap = vcs.Junction(id='srccold_evap', system=system, medium=coolant, upstream_component=srccold, upstream_id='outlet_A', downstream_component=evap, downstream_id='inlet_B', mdot_init=mdot_coldside, p_init=p_coolant, h_init=h_coldside_in)
 evap_snkcold = vcs.Junction(id='evap_snkcold', system=system, medium=coolant, upstream_component=evap, upstream_id='outlet_B', downstream_component=snkcold, downstream_id='inlet_A', mdot_init=mdot_coldside, p_init=p_coolant, h_init=h_coldside_in)
 
-T_hotside_range = arange(25, 55, 5) + 273.15
-T_coldside_range = arange(-5, 5, 2) + 273.15
-cpr_speed_range = arange(2000, 5000, 200)
+T_hotside_range = np.arange(25, 55, 5) + 273.15
+T_coldside_range = np.arange(-5, 5, 2) + 273.15
+cpr_speed_range = np.arange(1000, 5100, 200)
 result_list = []
 count = 1
 runs = T_coldside_range.shape[0] * T_hotside_range.shape[0] * cpr_speed_range.shape[0]
@@ -88,50 +88,51 @@ for T_hotside_in in T_hotside_range:
             result_list.append(res_dict)
             print("{} of {}".format(count, runs))
             count += 1
-
+        cpr_speed_range = np.flip(cpr_speed_range)
+    T_coldside_range = np.flip(T_coldside_range)
 data = DataFrame(result_list)
-data.to_pickle('data.csv.pkl')
+data.to_pickle('data.pkl')
 
-data = data[data['results'] == True]
-data['COP_cool'] = -data['Q0'] / data['Pel']
-# plot COP_cool over cpr_speed with various T_hotside_in and T_coldside_in == 4°C
-data_filtered = data[data['T_coldside_in']==1+273.15]
-for T_hotside_in in T_hotside_range:
-    data_filtered_Thot = data_filtered[data_filtered['T_hotside_in'] == T_hotside_in]
-    plt.plot(data_filtered_Thot['cpr_speed'], data_filtered_Thot['COP_cool'], label=str(T_hotside_in))
-    print(T_hotside_in)
-plt.xlabel('cpr speed')
-plt.ylabel('COP_cool')
-plt.legend()
-plt.title('T_coldside_in = 1°C')
-plt.show()
-
-
-data = data[data['results'] == True]
-data['COP_cool'] = -data['Q0'] / data['Pel']
-# plot COP_cool over cpr_speed with various T_hotside_in and T_coldside_in == 4°C
-data_filtered = data[data['T_hotside_in']==35+273.15]
-for T_coldside_in in T_coldside_range:
-    data_filtered_Thot = data_filtered[data_filtered['T_coldside_in'] == T_coldside_in]
-    plt.plot(data_filtered_Thot['cpr_speed'], data_filtered_Thot['COP_cool'], label=str(T_coldside_in))
-    print(T_coldside_in)
-plt.xlabel('cpr speed')
-plt.ylabel('COP_cool')
-plt.legend()
-plt.title('T_hotside_in = 35°C')
-plt.show()
-
-
-data = data[data['results'] == True]
-data['COP_cool'] = -data['Q0'] / data['Pel']
-# plot COP_cool over cpr_speed with various T_hotside_in and T_coldside_in == 4°C
-data_filtered = data[data['T_hotside_in']==35+273.15]
-for cpr_speed_set in cpr_speed_range:
-    data_filtered_Thot = data_filtered[data_filtered['cpr_speed'] == cpr_speed_set]
-    plt.plot(data_filtered_Thot['T_coldside_in'], data_filtered_Thot['COP_cool'], label=str(cpr_speed_set))
-    print(cpr_speed_set)
-plt.xlabel('Temp coldside')
-plt.ylabel('COP_cool')
-plt.legend()
-plt.title('T_hotside_in = 35°C')
-plt.show()
+# data = data[data['results'] == True]
+# data['COP_cool'] = -data['Q0'] / data['Pel']
+# # plot COP_cool over cpr_speed with various T_hotside_in and T_coldside_in == 4°C
+# data_filtered = data[data['T_coldside_in']==1+273.15]
+# for T_hotside_in in T_hotside_range:
+#     data_filtered_Thot = data_filtered[data_filtered['T_hotside_in'] == T_hotside_in]
+#     plt.plot(data_filtered_Thot['cpr_speed'], data_filtered_Thot['COP_cool'], label=str(T_hotside_in))
+#     print(T_hotside_in)
+# plt.xlabel('cpr speed')
+# plt.ylabel('COP_cool')
+# plt.legend()
+# plt.title('T_coldside_in = 1°C')
+# plt.show()
+#
+#
+# data = data[data['results'] == True]
+# data['COP_cool'] = -data['Q0'] / data['Pel']
+# # plot COP_cool over cpr_speed with various T_hotside_in and T_coldside_in == 4°C
+# data_filtered = data[data['T_hotside_in']==35+273.15]
+# for T_coldside_in in T_coldside_range:
+#     data_filtered_Thot = data_filtered[data_filtered['T_coldside_in'] == T_coldside_in]
+#     plt.plot(data_filtered_Thot['cpr_speed'], data_filtered_Thot['COP_cool'], label=str(T_coldside_in))
+#     print(T_coldside_in)
+# plt.xlabel('cpr speed')
+# plt.ylabel('COP_cool')
+# plt.legend()
+# plt.title('T_hotside_in = 35°C')
+# plt.show()
+#
+#
+# data = data[data['results'] == True]
+# data['COP_cool'] = -data['Q0'] / data['Pel']
+# # plot COP_cool over cpr_speed with various T_hotside_in and T_coldside_in == 4°C
+# data_filtered = data[data['T_hotside_in']==35+273.15]
+# for cpr_speed_set in cpr_speed_range:
+#     data_filtered_Thot = data_filtered[data_filtered['cpr_speed'] == cpr_speed_set]
+#     plt.plot(data_filtered_Thot['T_coldside_in'], data_filtered_Thot['COP_cool'], label=str(cpr_speed_set))
+#     print(cpr_speed_set)
+# plt.xlabel('Temp coldside')
+# plt.ylabel('COP_cool')
+# plt.legend()
+# plt.title('T_hotside_in = 35°C')
+# plt.show()
